@@ -25,22 +25,28 @@ def obtain_temporary_credentials() -> (str, str, str):
         return '', '', ''
 
 
-s3_client = boto3.client('s3')
-
-
 def upload_to_s3(local_file, bucket, s3_file):
+    access_key_id, secrete_access_key, session_token = obtain_temporary_credentials()
+    if access_key_id:
+        s3_client = boto3.client(  # access S3 with obtained credentials
+            's3',
+            aws_access_key_id=access_key_id,
+            aws_secret_access_key=secrete_access_key,
+            aws_session_token=session_token,
+        )
+        # upload a file
+        try:
+            s3_client.upload_file(local_file, bucket, s3_file)
+            print("Upload Successful")
+            return True
+        except FileNotFoundError:
+            print("The file was not found")
+            return False
+        except:
+            print(sys.exc_info())
+            return False
+    else:
+        print('No credentials available for accessing AWS S3')
 
-
-    try:
-        s3_client.upload_file(local_file, bucket, s3_file)
-        print("Upload Successful")
-        return True
-    except FileNotFoundError:
-        print("The file was not found")
-        return False
-    except:
-        print(sys.exc_info())
-        return False
-    
 
 upload_to_s3("jdj.jpg", "nthu-x1080066", "jdj.jpg")
