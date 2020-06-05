@@ -1,13 +1,16 @@
 import sys
 import requests
 import boto3
+from pathlib import Path
 
 
 def obtain_temporary_credentials() -> (str, str, str):
+    home = str(Path.home())
+
     """Obtain temporary credentials from AWS IoT device certificate and private key."""
     credential_provider_endpoint = 'https://c2svzaf1dnajce.credentials.iot.us-east-1.amazonaws.com/role-aliases/iot-s3-access-role-alias/credentials'
-    device_cert_path = '~/certs/aws_iot_arsen/certificate.pem.crt'
-    device_private_key_path = '~/certs/aws_iot_arsen/private.pem.key'
+    device_cert_path = home + '/certs/aws_iot_arsen/certificate.pem.crt'
+    device_private_key_path = home + '/certs/aws_iot_arsen/private.pem.key'
     resp = requests.get(
         credential_provider_endpoint,
         headers={'x-amzn-iot-thingname': 'RaspberryPi'},
